@@ -27,6 +27,10 @@ def to_pascalcase(text):
     return ''.join([t.title() for t in text.split('_')])
 
 
+class Null(object):
+    pass
+
+
 class Block(object):
 
     """
@@ -70,7 +74,9 @@ class Block(object):
         for k, v in self.fields.items():
             if v is not None:
                 k = to_pascalcase(k)
-                if k == to_pascalcase(Field.Parameters.value):
+                if isinstance(v, Null):
+                    result[k] = None
+                elif k == to_pascalcase(Field.Parameters.value):
                     result[k] = self._replace_placeholders(v)
                 else:
                     result[k] = v

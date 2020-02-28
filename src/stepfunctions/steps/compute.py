@@ -122,3 +122,31 @@ class EcsRunTaskStep(Task):
             kwargs[Field.Resource.value] = 'arn:aws:states:::ecs:runTask'
 
         super(EcsRunTaskStep, self).__init__(state_id, **kwargs)
+
+
+class StepFunctionsStartExecutionStep(Task):
+    """
+    Creates a Task state to trigger an execution of another workflow. See `Manage AWS Step Functions Executions as an Integrated Service <https://docs.aws.amazon.com/step-functions/latest/dg/connect-stepfunctions.html>`_ for more details.
+    """
+
+    def __init__(self, state_id, wait_for_completion=True, **kwargs):
+        """
+        Args:
+            state_id (str): State name whose length **must be** less than or equal to 128 unicode characters. State names **must be** unique within the scope of the whole state machine.
+            wait_for_completion(bool, optional): Boolean value set to `True` if the Task state should wait for the ecs job to complete before proceeding to the next step in the workflow. Set to `False` if the Task state should submit the ecs job and proceed to the next step. (default: True)
+            timeout_seconds (int, optional): Positive integer specifying timeout for the state in seconds. If the state runs longer than the specified timeout, then the interpreter fails the state with a `States.Timeout` Error Name. (default: 60)
+            heartbeat_seconds (int, optional): Positive integer specifying heartbeat timeout for the state in seconds. This value should be lower than the one specified for `timeout_seconds`. If more time than the specified heartbeat elapses between heartbeats from the task, then the interpreter fails the state with a `States.Timeout` Error Name.
+            comment (str, optional): Human-readable comment or description. (default: None)
+            input_path (str, optional): Path applied to the state’s raw input to select some or all of it; that selection is used by the state. (default: '$')
+            parameters (dict, optional): The value of this field becomes the effective input for the state.
+            result_path (str, optional): Path specifying the raw input’s combination with or replacement by the state’s result. (default: '$')
+            output_path (str, optional): Path applied to the state’s output after the application of `result_path`, producing the effective output which serves as the raw input for the next state. (default: '$')
+        """
+
+        if wait_for_completion:
+            kwargs[Field.Resource.value] = 'arn:aws:states:::states:startExecution.sync'
+        else:
+            kwargs[Field.Resource.value] = 'arn:aws:states:::states:startExecution'
+
+        super(StepFunctionsStartExecutionStep, self).__init__(state_id, **kwargs)
+
